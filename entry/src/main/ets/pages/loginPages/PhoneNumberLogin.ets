@@ -3,7 +3,10 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { PhoneNumberLoginParams } from './Login';
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
-
+interface tokenType{
+  status:number
+  token:string
+}
 async function saveToken(contextPage: PhoneNumberLogin, token: string) {
   const context: common.UIAbilityContext = contextPage.getUIContext().getHostContext() as common.UIAbilityContext
   const pref = await preferences.getPreferences(context, 'auth')
@@ -193,10 +196,9 @@ struct PhoneNumberLogin {
               },
               (err: BusinessError, data: http.HttpResponse) => {
                 if (!err) {
-                  console.log('result:' + JSON.stringify(data.result))
-                  console.log('header:' + JSON.stringify(data.header))
-                  if (data.result['status'] == 0) {
-                    saveToken(this, data.result['token'])
+                  const res:tokenType=JSON.parse(data.result as string)
+                  if (res.status == 0) {
+                    saveToken(this, res.token)
                     this.pathStack.pushPathByName('Layout', null)
                   }
                   httpRequest.destroy()
