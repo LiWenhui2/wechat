@@ -1,6 +1,5 @@
 import { preferences } from '@kit.ArkData'
 import { common } from '@kit.AbilityKit'
-import { BusinessError } from '@kit.BasicServicesKit'
 
 @Entry
 @Component
@@ -11,22 +10,19 @@ struct Index {
       await new Promise<preferences.Preferences>((resolve, reject) => {
         preferences.getPreferences(context, 'auth', (err, pref) => {
           if (err) {
+            console.error(err.code+'',err.message)
             return reject(err)
           }
           resolve(pref)
         })
       })
-    const token = await new Promise<string | null>((resolve) => {
-      pref.get('token', (err: BusinessError, value: string) => {
-        if (err) {
-          console.error('获取token失败:', err)
-          resolve(null)
-        } else {
-          resolve(value)
-        }
-      })
-    })
-    return token
+    try {
+      const token:string=await pref.get('token','') as string
+      return token||null
+    }catch (e){
+      console.error('获取 token 异常:', e)
+      return null
+    }
   }
 
   pathStack: NavPathStack = new NavPathStack()
