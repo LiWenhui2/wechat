@@ -3,12 +3,6 @@ import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
 import { loginHttpRequest } from '../utils/Request';
 
-async function saveToken(contextPage: PhoneNumberLogin, token: string) {
-  const context: common.UIAbilityContext = contextPage.getUIContext().getHostContext() as common.UIAbilityContext
-  const pref = await preferences.getPreferences(context, 'auth')
-  await pref.put('token', token)
-  await pref.flush()
-}
 
 @Builder
 export function PhoneNumberLoginBuilder() {
@@ -25,6 +19,20 @@ struct PhoneNumberLogin {
   @Local verifyCodeIsSend: boolean = false
   @Local verifyCodeCount: number = 60
   pathStack: NavPathStack = new NavPathStack()
+
+  async saveToken(token: string) {
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext
+    const pref = await new Promise<preferences.Preferences>((resolve, reject) => {
+      preferences.getPreferences(context,'auth',(err,pref)=>{
+        if (err) {
+          return reject(err)
+        }
+        resolve(pref)
+      })
+    })
+    await pref.put('token', token)
+    await pref.flush()
+  }
 
   @Builder
   DialogItem(text: string) {
@@ -176,7 +184,7 @@ struct PhoneNumberLogin {
               const res =
                 await loginHttpRequest({ loginType: 'phone', loginId: this.phoneNumber, password: this.password })
               if (!res.status) {
-                saveToken(this, res.token)
+                this.saveToken(res.token)
                 this.pathStack.clear()
                 this.pathStack.replacePathByName('Layout', null)
               }

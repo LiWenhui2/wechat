@@ -6,8 +6,10 @@ interface loginParamsType {
   loginId: string,
   password: string
 }
+
 interface tokenType {
   status: number
+  message: string
   token: string
 }
 

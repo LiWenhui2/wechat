@@ -1,4 +1,14 @@
-import { loginHttpRequest } from "../utils/Request"
+import { loginHttpRequest } from '../utils/Request';
+import { common } from '@kit.AbilityKit';
+import { preferences } from '@kit.ArkData';
+
+async function saveToken(contextPage: Login, token: string) {
+  const context: common.UIAbilityContext = contextPage.getUIContext().getHostContext() as common.UIAbilityContext
+  const pref = await preferences.getPreferences(context, 'auth')
+  await pref.put('token', token)
+  await pref.flush()
+}
+
 
 export interface PhoneNumberLoginParams {
   phoneNumber: string
@@ -18,8 +28,8 @@ struct Login {
   @Local areaCode: string = '+86'
   @Local phoneNumber: string = '15502796477'
   @Local isMoreDialogShow: boolean = false
-  @Local loginId:string=''
-  @Local password:string=''
+  @Local loginId: string = ''
+  @Local password: string = ''
   pathStack: NavPathStack = new NavPathStack()
 
   @Builder
@@ -117,12 +127,12 @@ struct Login {
         .placeholderFont({ size: 18 })
         .margin({ left: 20 })
         .backgroundColor('#fff')
-        .onChange(value=>{
-          if (title=='账号') {
-            this.loginId=value
+        .onChange(value => {
+          if (title == '账号') {
+            this.loginId = value
           }
-          if (title='密码') {
-            this.password=value
+          if (title == '密码') {
+            this.password = value
           }
         })
     }
@@ -211,15 +221,29 @@ struct Login {
               } else {
                 this.getUIContext().showAlertDialog({ message: '手机号码不能为空' })
               }
-            }else{
-              console.log(this.loginId,this.password)
-              const res=await loginHttpRequest({
-                loginType:'other',
-                loginId:this.loginId,
-                password:this.password
-              })
+            } else {
+              try {
+                console.log(this.loginId)
+                const res = await loginHttpRequest({
+                  loginType: 'other',
+                  loginId: this.loginId,
+                  password: this.password
+                })
+                console.log(JSON.stringify(res))
+                if (!res.status) {
+                  saveToken(this, res.token)
+                  this.pathStack.clear()
+                  this.pathStack.replacePathByName('Layout', null)
+                } else {
+                  this.getUIContext().showAlertDialog({
+                    message: res.message,
+                    width: 200
+                  })
+                }
+              } catch (e) {
+                console.error('登录失败：', e)
+              }
             }
-
           })
         Row() {
           Text('找回密码')
