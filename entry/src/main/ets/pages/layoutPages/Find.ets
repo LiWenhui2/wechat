@@ -1,0 +1,6 @@
+@ComponentV2
+export struct Find {
+  build() {
+    Text('Find')
+  }
+}
