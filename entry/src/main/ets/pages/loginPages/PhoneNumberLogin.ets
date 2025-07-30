@@ -1,12 +1,8 @@
-import { http } from '@kit.NetworkKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { PhoneNumberLoginParams } from './Login';
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
-interface tokenType{
-  status:number
-  token:string
-}
+import { loginHttpRequest } from '../utils/Request';
+
 async function saveToken(contextPage: PhoneNumberLogin, token: string) {
   const context: common.UIAbilityContext = contextPage.getUIContext().getHostContext() as common.UIAbilityContext
   const pref = await preferences.getPreferences(context, 'auth')
@@ -175,39 +171,18 @@ struct PhoneNumberLogin {
           .width(190)
           .height(50)
           .fontSize(17)
-          .onClick(() => {
-            let httpRequest = http.createHttp()
-            httpRequest.on('headersReceive', (header) => {
-              console.log('header:' + JSON.stringify(header))
-            })
-            httpRequest.request(
-              // 'http://192.168.1.30:1234/api/user/login',
-              'http://43.159.41.42:1234/api/user/login',
-              {
-                method: http.RequestMethod.POST,
-                extraData: JSON.stringify({
-                  loginType: 'phone',
-                  loginId: this.phoneNumber,
-                  password: this.password
-                }),
-                header: {
-                  'Content-Type': 'application/json'
-                },
-              },
-              (err: BusinessError, data: http.HttpResponse) => {
-                if (!err) {
-                  const res:tokenType=JSON.parse(data.result as string)
-                  if (res.status == 0) {
-                    saveToken(this, res.token)
-                    this.pathStack.pushPathByName('Layout', null)
-                  }
-                  httpRequest.destroy()
-                } else {
-                  console.log('err:' + JSON.stringify(err))
-                  httpRequest.destroy()
-                }
+          .onClick(async () => {
+            try {
+              const res =
+                await loginHttpRequest({ loginType: 'phone', loginId: this.phoneNumber, password: this.password })
+              if (!res.status) {
+                saveToken(this, res.token)
+                this.pathStack.clear()
+                this.pathStack.replacePathByName('Layout', null)
               }
-            )
+            } catch (e) {
+              console.error('登录失败：', e)
+            }
           })
       }
       .padding(20)

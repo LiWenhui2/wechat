@@ -2,7 +2,9 @@
 @Component
 struct Index {
   pathStack: NavPathStack = new NavPathStack()
+aboutToAppear(): void {
 
+}
   build() {
     Navigation(this.pathStack) {
     }.onAppear(() => {

@@ -1,3 +1,5 @@
+import { loginHttpRequest } from "../utils/Request"
+
 export interface PhoneNumberLoginParams {
   phoneNumber: string
   areaCode: string
@@ -8,14 +10,16 @@ export function LoginBuilder() {
   Login()
 }
 
-@Component
+@ComponentV2
 struct Login {
-  @State isClick: boolean = false
-  @State isPhoneNumberLogin: boolean = true
-  @State selectedCountry: string = '中国大陆'
-  @State areaCode: string = '+86'
-  @State phoneNumber: string = '15502796477'
-  @State isMoreDialogShow: boolean = false
+  @Local isClick: boolean = false
+  @Local isPhoneNumberLogin: boolean = true
+  @Local selectedCountry: string = '中国大陆'
+  @Local areaCode: string = '+86'
+  @Local phoneNumber: string = '15502796477'
+  @Local isMoreDialogShow: boolean = false
+  @Local loginId:string=''
+  @Local password:string=''
   pathStack: NavPathStack = new NavPathStack()
 
   @Builder
@@ -113,6 +117,14 @@ struct Login {
         .placeholderFont({ size: 18 })
         .margin({ left: 20 })
         .backgroundColor('#fff')
+        .onChange(value=>{
+          if (title=='账号') {
+            this.loginId=value
+          }
+          if (title='密码') {
+            this.password=value
+          }
+        })
     }
     .height(55)
   }
@@ -191,14 +203,23 @@ struct Login {
           .width(190)
           .height(50)
           .fontSize(17)
-          .onClick(() => {
-            if (this.phoneNumber.trim()) {
-              this.pathStack.pushPathByName('PhoneNumberLogin',
-                { phoneNumber: this.phoneNumber, areaCode: this.areaCode } as PhoneNumberLoginParams)
-            } else {
-              this.getUIContext().showAlertDialog({ message: '手机号码不能为空' })
-
+          .onClick(async () => {
+            if (this.isPhoneNumberLogin) {
+              if (this.phoneNumber.trim()) {
+                this.pathStack.pushPathByName('PhoneNumberLogin',
+                  { phoneNumber: this.phoneNumber, areaCode: this.areaCode } as PhoneNumberLoginParams)
+              } else {
+                this.getUIContext().showAlertDialog({ message: '手机号码不能为空' })
+              }
+            }else{
+              console.log(this.loginId,this.password)
+              const res=await loginHttpRequest({
+                loginType:'other',
+                loginId:this.loginId,
+                password:this.password
+              })
             }
+
           })
         Row() {
           Text('找回密码')
