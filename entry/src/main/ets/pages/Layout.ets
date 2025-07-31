@@ -31,9 +31,10 @@ struct Layout {
         .width(28)
         .fillColor(this.currentIndex == index ? '#03c160' : '#1c1c1c')
       Text(item.text)
-        .fontSize(15)
+        .fontSize(14)
         .fontColor(this.currentIndex == index ? '#03c160' : '#303030')
     }
+    .padding({ top: 10 })
 
   }
 
@@ -52,6 +53,7 @@ struct Layout {
               User()
             }
           }
+          .backgroundColor('#fff')
           .tabBar(this.TabBuilder(item, index))
         })
       }
@@ -60,6 +62,8 @@ struct Layout {
       })
       .animationDuration(0)
       .scrollable(false)
+      .backgroundColor('#33c3c1c1')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
