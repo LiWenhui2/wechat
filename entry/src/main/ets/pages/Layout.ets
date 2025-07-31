@@ -62,8 +62,9 @@ struct Layout {
       })
       .animationDuration(0)
       .scrollable(false)
-      .backgroundColor('#33c3c1c1')
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      .backgroundColor('#ededed')
+      .layoutWeight(1)
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack

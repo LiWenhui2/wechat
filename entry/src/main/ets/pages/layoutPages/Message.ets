@@ -5,9 +5,8 @@ interface FriendListType {
   message: string
 }
 
-@Entry
 @ComponentV2
-struct Index {
+export struct Message {
   now: Date = new Date()
   time: string = `${this.now.getHours()}:${this.now.getMinutes().toString().padStart(2, '0')}`
   //@formatter:off
@@ -15,8 +14,20 @@ struct Index {
     {id:1, icon: $r('app.media.avatar'), name: '乌萨奇', message: '乌拉' },
     {id:2, icon: $r('app.media.avatar'), name: '吉伊', message: '乌拉' },
     {id:3, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:4, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:5, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:6, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:7, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:8, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:9, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:10, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:11, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:12, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
+    {id:13, icon: $r('app.media.avatar'), name: '小八', message: '乌拉' },
   ]
   //@formatter:on
+  @Local isMenuBarShow: boolean = false
+
   @Builder
   FriendBuilder(friend: FriendListType) {
     Column() {
@@ -45,6 +56,18 @@ struct Index {
     }
   }
 
+  @Builder
+  MenuBar() {
+    Column() {
+      Row({ space: 10 }) {
+        Image($r('app.media.layout_message_menu_msg'))
+          .width(24)
+        Text('发起群聊')
+      }
+    }
+    .padding({ left: 15, right: 15 })
+  }
+
   build() {
     Column() {
       Stack({ alignContent: Alignment.End }) {
@@ -56,6 +79,20 @@ struct Index {
         Image($r('app.media.layout_message_more_icon'))
           .width('20')
           .fillColor('#101010')
+          .margin({ right: 10 })
+          .onClick(() => {
+            this.isMenuBarShow = true
+          })
+          .bindMenu(this.isMenuBarShow, this.MenuBar(), {
+            enableArrow: true,
+            placement: Placement.Bottom,
+            hapticFeedbackMode: HapticFeedbackMode.ENABLED,
+            arrowOffset: 200,
+            backgroundColor: '#4c4c4c',
+            onDisappear: () => {
+              this.isMenuBarShow = false
+            }
+          })
       }
       .padding({ left: 15, right: 15 })
 
@@ -96,6 +133,5 @@ struct Index {
     .backgroundColor('#ededed')
     .width('100%')
     .height('100%')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
   }
 }
