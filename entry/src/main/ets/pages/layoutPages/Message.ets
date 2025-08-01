@@ -65,6 +65,7 @@ export struct Message {
         Text('发起群聊')
       }
     }
+    .backgroundColor('#4c4c4c')
     .padding({ left: 15, right: 15 })
   }
 
@@ -79,16 +80,15 @@ export struct Message {
         Image($r('app.media.layout_message_more_icon'))
           .width('20')
           .fillColor('#101010')
-          .margin({ right: 10 })
+          .margin({ right: 15 })
           .onClick(() => {
             this.isMenuBarShow = true
           })
           .bindMenu(this.isMenuBarShow, this.MenuBar(), {
             enableArrow: true,
             placement: Placement.Bottom,
-            hapticFeedbackMode: HapticFeedbackMode.ENABLED,
-            arrowOffset: 200,
-            backgroundColor: '#4c4c4c',
+            borderRadius: 3,
+            backgroundColor: Color.Red,
             onDisappear: () => {
               this.isMenuBarShow = false
             }
